@@ -1,0 +1,32 @@
+> az group create -n MyResourceGroup -l westus2
+
+> az vm create -n MyLinuxVM -g MyResourceGroup --image UbuntuLTS
+
+> az vm create -n MyLinuxVM -g MyResourceGroup --image UbuntuLTS --data-disk-sizes-gb 10 20
+
+> az vm create -n MyLinuxVM -g MyResourceGroup --image UbuntuLTS --generate-ssh-keys
+
+> az vm create -n MyWinVM -g MyResourceGroup --image Win2016Datacenter
+
+> az network lb create -n MyLoadBalancer -g MyResourceGroup
+
+> az network vnet create -n MyVirtualNetwork -g MyResourceGroup --address-prefix 10.0.0.0/16
+
+> # Create an Azure AppService that we can host any number of web apps within
+      > az appservice plan create -n MyAppServicePlan -g MyResourceGroup
+
+    # Create Two Web Apps within the AppService (note: name param must be a unique DNS entry)
+      > az webapp create -n MyWebApp43432 -g MyResourceGroup --plan MyAppServicePlan 
+      > az webapp create -n MyWebApp43433 -g MyResourceGroup --plan MyAppServicePlan
+
+> az vm list --output table
+
+> az vm list --output tsv
+
+> az vm list -g MyResourceGroup --output table
+
+> az vm list --output table --query "[?contains(resourceGroup,'MY')].{ VMName:name,OSType:storageProfile.osDisk.osType }"
+
+> az vm delete -n MyLinuxVM -g MyResourceGroup
+
+> az group delete -n MyResourceGroup
