@@ -1,0 +1,39 @@
+> Get-AzureRmVM | Select-Object Name,ResourceGroupName,Location
+
+> Get-AzureRmVM | Select-Object name,@{Name='OSType'; Expression={$_.StorageProfile.OSDisk.OSType}}
+
+> Get-AzureRmVM | Where-Object ResourceGroupName -like "RGD*" | Select-Object ResourceGroupName,Name
+
+> Get-AzureRmVM | Where-Object vmSize -eq 'Standard_DS1_V2'
+
+Formatting:
+
+> Get-AzureRmVM | Format-Table Name,ResourceGroupName,Location -AutoSize
+> Get-AzureVM | Format-List Name,VmId,Location,ResourceGroupName
+> 
+
+Converting:
+
+> Get-AzureRmVM | Select-Object ResourceGroupName,Id,VmId,Name,Location,ProvisioningState | ConvertTo-Csv -NoTypeInformation
+> Get-AzureRmVM | Select-Object ResourceGroupName,Id,VmId,Name,Location,ProvisioningState | ConvertTo-Json
+
+
+# Subcriptions:
+
+> Get-AzureRmSubscription
+> Select-AzureRmSubscription -SubscriptionName "My Demos"
+> Get-AzureRmContext
+
+# Deploy Template using Resource Manager:
+
+> Login-AzureRmAccount
+> New-AzureRmResourceGroup -Name ExampleResourceGroup -Location "South Central US"
+> New-AzureRmResourceGroupDeployment -Name ExampleDeployment -ResourceGroupName ExampleResourceGroup `
+  -TemplateFile c:\MyTemplates\storage.json -storageAccountType Standard_GRS
+  
+# Deploy Template from an External source:
+
+> New-AzureRmResourceGroupDeployment -Name ExampleDeployment -ResourceGroupName ExampleResourceGroup `
+  -TemplateUri https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/101-storage-account-create/azuredeploy.json `
+  -storageAccountType Standard_GRS
+  
