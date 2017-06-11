@@ -1,0 +1,22 @@
+INSTALL AZURE POWERSHELL:
+
+  Commands:
+  
+      > Get-Module PowerShellGet -list | Select-Object Name,Version,Path
+      
+          Name          Version Path
+          ----          ------- ----
+          PowerShellGet 1.0.0.1 C:\Program Files\WindowsPowerShell\Modules\PowerShellGet\1.0.0.1\PowerShellGet.psd1
+          
+      > Install-Module AzureRM
+      
+      > Import-Module AzureRM
+      
+      > Get-Module AzureRM -list | Select-Object Name,Version,Path
+      
+      > Install-Module AzureRM -AllowClobber
+      
+      > Install-Module -Name AzureRM -RequiredVersion 3.7.0
+      > Install-Module -Name AzureRM -RequiredVersion 1.2.9
+      
+      
