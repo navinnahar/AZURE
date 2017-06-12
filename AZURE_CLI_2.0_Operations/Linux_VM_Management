@@ -1,0 +1,28 @@
+# Login to Azure
+> az login
+
+# Create a Resource Group
+> az group create --name myResourceGroup --location eastus
+
+# Create a Virtual Machine
+> az vm create --resource-group myResourceGroup --name myVM --image UbuntuLTS --generate-ssh-keys
+
+# Open port for web traffic
+> az vm open-port --port 80 --resource-group myResourceGroup --name myVM
+
+# SSH into your machine
+> ssh <publicIpAddress>
+
+# Install Nginx on the Ubuntu Machine
+          #!/bin/bash
+
+          # update package source
+          apt-get -y update
+
+          # install NGINX
+          apt-get -y install nginx
+          
+# View the NGINX Welcome Page
+
+# Once done, Clean up Resources
+# az group delete --name myResourceGroup
