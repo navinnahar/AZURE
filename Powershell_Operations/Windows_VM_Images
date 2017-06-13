@@ -1,0 +1,9 @@
+> Get-AzureRmVMImagePublisher -Location "EastUS"
+
+> Get-AzureRmVMImageOffer -Location "EastUS" -PublisherName "MicrosoftWindowsServer"
+
+> Get-AzureRmVMImageSku -Location "EastUS" -PublisherName "MicrosoftWindowsServer" -Offer "WindowsServer"
+
+> $vm = Set-AzureRmVMSourceImage -VM $vm -PublisherName MicrosoftWindowsServer -Offer WindowsServer `
+      -Skus 2016-Datacenter-with-Containers -Version latest
+
