@@ -1,0 +1,68 @@
+> az group create --name myResourceGroupScaleSet --location eastus
+> az vmss create \
+  --resource-group myResourceGroupScaleSet \
+  --name myScaleSet \
+  --image Canonical:UbuntuServer:14.04.4-LTS:latest \
+  --upgrade-policy-mode automatic \
+  --custom-data cloud-init.txt \
+  --admin-username azureuser \
+  --generate-ssh-keys
+  
+> az network lb rule create \
+  --resource-group myResourceGroupScaleSet \
+  --name myLoadBalancerRuleWeb \
+  --lb-name myScaleSetLB \
+  --backend-pool-name myScaleSetLBBEPool \
+  --backend-port 80 \
+  --frontend-ip-name loadBalancerFrontEnd \
+  --frontend-port 80 \
+  --protocol tcp
+  
+> az network public-ip show \
+    --resource-group myResourceGroupScaleSet \
+    --name myScaleSetLBPublicIP \
+    --query [ipAddress] \
+    --output tsv
+    
+Mgmt Tasks:
+
+> az vmss list-instances \
+  --resource-group myResourceGroupScaleSet \
+  --name myScaleSet \
+  --output table
+  
+> az vmss show \
+    --resource-group myResourceGroupScaleSet \
+    --name myScaleSet \
+    --query [sku.capacity] \
+    --output table
+    
+> az vmss scale \
+    --resource-group myResourceGroupScaleSet \
+    --name myScaleSet \
+    --new-capacity 5
+    
+> az vmss list-instance-connection-info \
+    --resource-group myResourceGroupScaleSet \
+    --name myScaleSet
+    
+> az vmss create \
+  --resource-group myResourceGroupScaleSet \
+  --name myScaleSetDisks \
+  --image Canonical:UbuntuServer:14.04.4-LTS:latest \
+  --upgrade-policy-mode automatic \
+  --custom-data cloud-init.txt \
+  --admin-username azureuser \
+  --generate-ssh-keys \
+  --data-disk-sizes-gb 50
+  
+> az vmss disk attach `
+    --resource-group myResourceGroupScaleSet `
+    --name myScaleSet `
+    --size-gb 50 `
+    --lun 2
+    
+> az vmss disk detach `
+    --resource-group myResourceGroupScaleSet `
+    --name myScaleSet `
+    --lun 2
