@@ -43,6 +43,7 @@ $vmConfig = New-AzureRmVMConfig -VMName myVM -VMSize Standard_DS2 | `
 > New-AzureRmVM -ResourceGroupName myResourceGroup -Location EastUS -VM $vmConfig
 
 > Get-AzureRmPublicIpAddress -ResourceGroupName myResourceGroup | Select IpAddress
+> Get-AzureRmPublicIPAddress -ResourceGroupName myResourceGroupAutomate -Name myPublicIP | select IpAddress
 
 # Instals IIS Via PowerShell
 
