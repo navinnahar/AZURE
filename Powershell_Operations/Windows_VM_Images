@@ -7,3 +7,101 @@
 > $vm = Set-AzureRmVMSourceImage -VM $vm -PublisherName MicrosoftWindowsServer -Offer WindowsServer `
       -Skus 2016-Datacenter-with-Containers -Version latest
 
+
+--- Generalize the Windows VM using Sysprep
+      Connect to the virtual machine.
+      Open the Command Prompt window as an administrator. Change the directory to %windir%\system32\sysprep, and then run sysprep.exe.
+      In the System Preparation Tool dialog box, select Enter System Out-of-Box Experience (OOBE), and make sure that the Generalize check box is selected.
+      In Shutdown Options, select Shutdown and then click OK.
+      When Sysprep completes, it shuts down the virtual machine. Do not restart the VM.
+
+> Stop-AzureRmVM -ResourceGroupName myResourceGroupImages -Name myVM -Force
+> Set-AzureRmVM -ResourceGroupName myResourceGroupImages -Name myVM -Generalized
+
+Create the image:
+> $vm = Get-AzureRmVM -Name myVM -ResourceGroupName myResourceGroupImages
+> $image = New-AzureRmImageConfig -Location EastUS -SourceVirtualMachineId $vm.ID
+> New-AzureRmImage -Image $image -ImageName myImage -ResourceGroupName myResourceGroupImages
+
+
+Create VMs from the image
+
+$cred = Get-Credential -Message "Enter a username and password for the virtual machine."
+
+New-AzureRmResourceGroup -Name myResourceGroupFromImage -Location EastUS
+
+$subnetConfig = New-AzureRmVirtualNetworkSubnetConfig `
+    -Name mySubnet `
+    -AddressPrefix 192.168.1.0/24
+
+$vnet = New-AzureRmVirtualNetwork `
+    -ResourceGroupName myResourceGroupFromImage `
+    -Location EastUS `
+    -Name MYvNET `
+    -AddressPrefix 192.168.0.0/16 `
+    -Subnet $subnetConfig
+
+$pip = New-AzureRmPublicIpAddress `
+    -ResourceGroupName myResourceGroupFromImage `
+    -Location EastUS `
+    -Name "mypublicdns$(Get-Random)" `
+    -AllocationMethod Static `
+    -IdleTimeoutInMinutes 4
+
+  $nsgRuleRDP = New-AzureRmNetworkSecurityRuleConfig `
+    -Name myNetworkSecurityGroupRuleRDP `
+    -Protocol Tcp `
+    -Direction Inbound `
+    -Priority 1000 `
+    -SourceAddressPrefix * `
+    -SourcePortRange * `
+    -DestinationAddressPrefix * `
+    -DestinationPortRange 3389 `
+    -Access Allow
+
+  $nsg = New-AzureRmNetworkSecurityGroup `
+    -ResourceGroupName myResourceGroupFromImage `
+    -Location EastUS `
+    -Name myNetworkSecurityGroup `
+    -SecurityRules $nsgRuleRDP
+
+$nic = New-AzureRmNetworkInterface `
+    -Name myNic `
+    -ResourceGroupName myResourceGroupFromImage `
+    -Location EastUS `
+    -SubnetId $vnet.Subnets[0].Id `
+    -PublicIpAddressId $pip.Id `
+    -NetworkSecurityGroupId $nsg.Id
+
+$vmConfig = New-AzureRmVMConfig `
+    -VMName myVMfromImage `
+    -VMSize Standard_D1 | Set-AzureRmVMOperatingSystem -Windows `
+        -ComputerName myComputer `
+        -Credential $cred 
+
+# Here is where we create a variable to store information about the image 
+$image = Get-AzureRmImage `
+    -ImageName myImage `
+    -ResourceGroupName myResourceGroupImages
+
+# Here is where we specify that we want to create the VM from and image and provide the image ID
+$vmConfig = Set-AzureRmVMSourceImage -VM $vmConfig -Id $image.Id
+
+$vmConfig = Add-AzureRmVMNetworkInterface -VM $vmConfig -Id $nic.Id
+
+New-AzureRmVM `
+    -ResourceGroupName myResourceGroupFromImage `
+    -Location EastUS `
+    -VM $vmConfig
+    
+
+
+Image management
+
+> $images = Find-AzureRMResource -ResourceType Microsoft.Compute/images 
+$images.name
+
+> Remove-AzureRmImage `
+    -ImageName myOldImage `
+    -ResourceGroupName myResourceGroup
+    
