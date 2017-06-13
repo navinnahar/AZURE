@@ -1,0 +1,30 @@
+DeProvision:
+  Login to  Machine:
+
+    $ ssh azureuser@52.174.34.95
+    $ sudo waagent -deprovision+user -force
+    $ exit
+    
+DeAllocate:
+  > az vm deallocate --resource-group myResourceGroup --name myVM
+  
+DeGeneralize:
+  > az vm generalize --resource-group myResourceGroup --name myVM
+  
+Create Image:
+  > az image create \
+    --resource-group myResourceGroup \
+    --name myImage \
+    --source myVM
+    
+Create VM's from Image:
+> az vm create \
+    --resource-group myResourceGroup \
+    --name myVMfromImage \
+    --image myImage \
+    --admin-username azureuser \
+    --generate-ssh-keys
+    
+Image Mgmt:
+> az image list --resource-group myResourceGroup
+> az image delete --name myOldImage --resource-group myResourceGroup
