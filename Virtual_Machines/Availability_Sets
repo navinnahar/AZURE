@@ -1,0 +1,23 @@
+> az group create --name myResourceGroupAvailability --location eastus
+> az vm availability-set create \
+    --resource-group myResourceGroupAvailability \
+    --name myAvailabilitySet \
+    --platform-fault-domain-count 2 \
+    --platform-update-domain-count 2
+    
+> for i in `seq 1 2`; do
+   az vm create \
+     --resource-group myResourceGroupAvailability \
+     --name myVM$i \
+     --availability-set myAvailabilitySet \
+     --size Standard_DS1_v2  \
+     --image Canonical:UbuntuServer:14.04.4-LTS:latest \
+     --admin-username azureuser \
+     --generate-ssh-keys \
+     --no-wait
+done
+
+> az vm availability-set list-sizes \
+     --resource-group myResourceGroupAvailability \
+     --name myAvailabilitySet \
+     --output table
